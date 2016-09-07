@@ -1,1 +1,4 @@
-include ':app'
+//include ':app', ':dagger2_dome', ':butterknife_test', ':postupload_test', ':retorfit_test',
+//include ':day38_homework', ':dbuitls', ':mvp_test', ':rxjava_test', ':viedoview_test'
+//include ':viedoview_test', ':timelymessage_test', ':zxing_test', ':zxing_code',
+include ':romeoseatao_project', ':refreshlibrary', ':vitamio', ':coordinatorlayout_test'
