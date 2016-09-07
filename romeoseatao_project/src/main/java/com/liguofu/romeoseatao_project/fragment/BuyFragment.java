@@ -4,16 +4,19 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.liguofu.romeoseatao_project.R;
 import com.squareup.picasso.Picasso;
 
@@ -32,7 +35,7 @@ import retrofit2.Response;
 public class BuyFragment extends Fragment {
 
     private Context context;
-    private ListView mListView;
+    private PullToRefreshListView mListView;
     private ConvenientBanner cb;
     private RecyclerView mRecycleView;
     private  List<BuyBean.DatasBean.HomesBean.AdvesBean> adves = new ArrayList<>();
@@ -53,15 +56,16 @@ public class BuyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.buy_frag,null);
-        mListView = (ListView) view.findViewById(R.id.prlv_buy);
+        mListView = (PullToRefreshListView) view.findViewById(R.id.prlv_buy);
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        loadData();
         initHeaderView();
+        loadData();
+
     }
 
     private void loadData() {
@@ -71,7 +75,7 @@ public class BuyFragment extends Fragment {
                 BuyBean body = response.body();
                 adves.addAll(body.getDatas().getHomes().getAdves());
                 sorts.addAll(body.getDatas().getHomes().getSorts());
-
+                setupAdapter();
             }
 
             @Override
@@ -86,7 +90,7 @@ public class BuyFragment extends Fragment {
         View view  = LayoutInflater.from(context).inflate(R.layout.buy_header_view,null);
         cb = (ConvenientBanner) view.findViewById(R.id.cb_buy_header);
         mRecycleView = (RecyclerView) view.findViewById(R.id.rv_buy_header);
-
+        mListView.getRefreshableView().addHeaderView(view);
 
     }
 
@@ -98,8 +102,10 @@ public class BuyFragment extends Fragment {
             }
         },adves).startTurning(3000);
 
-
-
+        LinearLayoutManager layout = new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false);
+        mRecycleView.setLayoutManager(layout);
+        RecycleViewAdapter recycleViewAdapter = new RecycleViewAdapter();
+        mRecycleView.setAdapter(recycleViewAdapter);
     }
 
     class RecycleViewHodler extends RecyclerView.ViewHolder{
@@ -114,17 +120,21 @@ public class BuyFragment extends Fragment {
 
         @Override
         public RecycleViewHodler onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
+            ImageView iamge = new ImageView(context);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, 10, 0);
+            iamge.setLayoutParams(lp);
+            return new RecycleViewHodler(iamge);
         }
 
         @Override
         public void onBindViewHolder(RecycleViewHodler holder, int position) {
-
+            Picasso.with(context).load(sorts.get(position).getLogos()).into(holder.image);
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            return sorts == null ? 0 : sorts.size();
         }
     }
 
