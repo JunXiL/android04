@@ -39,11 +39,19 @@
 
     <io.vov.vitamio.widget.CenterLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="300dp"
+        android:visibility="gone"
+        >
         <io.vov.vitamio.widget.VideoView
             android:id="@+id/vv_live_detail"
             android:layout_width="match_parent"
             android:layout_height="300dp"/>
     </io.vov.vitamio.widget.CenterLayout>
+
+    <WebView
+        android:id="@+id/wv_livedetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 </LinearLayout>

@@ -82,28 +82,18 @@ public class MainActivity extends AppCompatActivity {
                 switch (checkedId){
                     case R.id.rb_main_one:
                         showAllFragment(fragment1);
-                        bt1.setText("首页");
-                        bt1.setTextColor(Color.BLUE);
                         break;
                     case R.id.rb_main_two:
                         showAllFragment(fragment2);
-                        bt2.setText("直播");
-                        bt2.setTextColor(Color.BLUE);
                         break;
                     case R.id.rb_main_three:
                         showAllFragment(fragment3);
-                        bt3.setText("买欧洲");
-                        bt3.setTextColor(Color.BLUE);
                         break;
                     case R.id.rb_main_four:
                         showAllFragment(fragment4);
-                        bt4.setText("购物车");
-                        bt4.setTextColor(Color.BLUE);
                         break;
                     case R.id.rb_main_five:
                         showAllFragment(fragment5);
-                        bt5.setText("我的");
-                        bt5.setTextColor(Color.BLUE);
                         break;
                 }
             }

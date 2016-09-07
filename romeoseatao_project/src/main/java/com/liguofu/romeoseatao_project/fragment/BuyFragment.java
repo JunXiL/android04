@@ -1,11 +1,13 @@
 package com.liguofu.romeoseatao_project.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +18,17 @@ import android.widget.ListView;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.liguofu.romeoseatao_project.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import HttpUitls.HttpRetrofit;
+import adapter.BuyListViewAdapter;
 import bean.BuyBean;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +45,9 @@ public class BuyFragment extends Fragment {
     private RecyclerView mRecycleView;
     private  List<BuyBean.DatasBean.HomesBean.AdvesBean> adves = new ArrayList<>();
     private List<BuyBean.DatasBean.HomesBean.SortsBean>  sorts = new ArrayList<>();
+    private List<BuyBean.DatasBean.HomesBean> beans = new ArrayList<>();
+    private ProgressDialog dialog;
+
 
     public static BuyFragment newInstance(){
         BuyFragment fragment = new BuyFragment();
@@ -63,19 +71,25 @@ public class BuyFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("努力加载中。。。");
         initHeaderView();
         loadData();
 
     }
 
     private void loadData() {
+        dialog.show();
         HttpRetrofit.init().getBuyResult().enqueue(new Callback<BuyBean>() {
             @Override
             public void onResponse(Call<BuyBean> call, Response<BuyBean> response) {
                 BuyBean body = response.body();
-                adves.addAll(body.getDatas().getHomes().getAdves());
-                sorts.addAll(body.getDatas().getHomes().getSorts());
+                BuyBean.DatasBean.HomesBean bean = body.getDatas().getHomes();
+                beans.add(body.getDatas().getHomes());
+                adves.addAll(bean.getAdves());
+                sorts.addAll(bean.getSorts());
                 setupAdapter();
+                setupListViewAdapter();
             }
 
             @Override
@@ -91,7 +105,12 @@ public class BuyFragment extends Fragment {
         cb = (ConvenientBanner) view.findViewById(R.id.cb_buy_header);
         mRecycleView = (RecyclerView) view.findViewById(R.id.rv_buy_header);
         mListView.getRefreshableView().addHeaderView(view);
+    }
 
+    private void setupListViewAdapter(){
+        dialog.dismiss();
+        BuyListViewAdapter buyListViewAdapter = new BuyListViewAdapter(context,beans);
+        mListView.setAdapter(buyListViewAdapter);
     }
 
     private void setupAdapter(){
@@ -121,7 +140,7 @@ public class BuyFragment extends Fragment {
         @Override
         public RecycleViewHodler onCreateViewHolder(ViewGroup parent, int viewType) {
             ImageView iamge = new ImageView(context);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(300, 300);
             lp.setMargins(0, 0, 10, 0);
             iamge.setLayoutParams(lp);
             return new RecycleViewHodler(iamge);
